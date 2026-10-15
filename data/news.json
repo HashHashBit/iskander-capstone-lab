@@ -1,0 +1,64 @@
+[
+  {
+    "slug": "same-day-invoice-processing",
+    "title": "A note from Accounts Payable: send invoices straight to me",
+    "author": "f.karim",
+    "date": "2026-07-14",
+    "body": [
+      "Three years in Accounts Payable at Rafid FS and I still open every vendor invoice that lands in my inbox personally.",
+      "If you supply us, please send your invoices and remittance queries straight to me at f.karim@rafidfs.local rather than the general mailbox — I process them same-day and it saves everyone a round of forwarding.",
+      "A quick reminder on format: PDF is fine, please quote the PO number in the subject, and if it's an updated statement just say so and I'll match it against what we have. If you've changed your bank details, send the update on your own letterhead and I'll get it verified with your account manager.",
+      "Thanks for making month-end painless. — Farah"
+    ]
+  },
+  {
+    "slug": "rafid-fs-turns-fifteen",
+    "title": "Rafid Financial Services turns fifteen",
+    "author": "s.rahman",
+    "date": "2026-01-20",
+    "body": [
+      "Fifteen years ago Rafid FS opened with two desks and a promise: books our clients could trust, and advice they could act on.",
+      "Today we look after the accounting, tax, and payroll of dozens of regional SMEs. Thank you to every client and every member of the team who got us here."
+    ]
+  },
+  {
+    "slug": "vat-filing-deadline-reminder",
+    "title": "Quarterly VAT filing deadline — what clients need to send us",
+    "author": "s.khalil",
+    "date": "2026-06-30",
+    "body": [
+      "The next quarterly VAT filing deadline is approaching. Retained clients: please have your sales and purchase ledgers to us at least ten working days before the deadline.",
+      "If you're unsure what we still need from you, your usual contact in the tax team can send a short checklist."
+    ]
+  },
+  {
+    "slug": "new-advisory-service-controls-reviews",
+    "title": "New service: internal-controls reviews for growing SMEs",
+    "author": "l.aziz",
+    "date": "2026-05-12",
+    "body": [
+      "As our clients grow, the informal controls that worked at ten staff stop working at fifty.",
+      "Our advisory team now offers a focused internal-controls review — including payment-approval and vendor-onboarding controls, an area where we see the most avoidable losses."
+    ]
+  },
+  {
+    "slug": "office-refurbishment-district-7",
+    "title": "Our District 7 office refurbishment is complete",
+    "author": "b.hakim",
+    "date": "2026-03-03",
+    "body": [
+      "The refurbishment of the Al-Nahda Business Centre office is finished and the team is fully moved back in.",
+      "Deliveries and couriers should continue to use the rear entrance; reception hours are unchanged."
+    ]
+  },
+  {
+    "slug": "we-are-hiring-2026",
+    "title": "We're hiring across finance, audit, and tax",
+    "author": "n.fawzi",
+    "date": "2026-08-01",
+    "body": [
+      "Rafid FS is growing and we're recruiting across several teams. See our careers page for current openings.",
+      "We hire for attitude and train for tools — but a head start on the software we use always helps."
+    ]
+  }
+]

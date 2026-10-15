@@ -1,0 +1,15 @@
+[
+  { "id": "cedar-office", "name": "Cedar Office Supplies", "domain": "cedar-office.local", "account_manager": "George Haddad", "am_email": "g.haddad@cedar-office.local", "category": "Office supplies & stationery", "blurb": "Rafid FS's stationery and printer-consumables vendor since 2014. Monthly consolidated invoice." },
+
+  { "id": "meridian-it", "name": "Meridian IT Solutions", "domain": "meridian-it.local", "account_manager": "Sami Toubas", "am_email": "s.toubas@meridian-it.local", "category": "IT hardware & licensing reseller", "blurb": "Supplies laptops, the Sage 50 licence renewal, and Outlook 365 seats. Quarterly billing." },
+
+  { "id": "northlink", "name": "NorthLink Networks", "domain": "northlink-net.local", "account_manager": "Rami Sabbagh", "am_email": "r.sabbagh@northlink-net.local", "category": "Connectivity & VPN provider", "blurb": "Provides the office internet and the NorthLink VPN used for remote access. Monthly service invoice." },
+
+  { "id": "sentinel-guard", "name": "Sentinel-Guard Security", "domain": "sentinelguard.local", "account_manager": "Dana Aoun", "am_email": "d.aoun@sentinelguard.local", "category": "Endpoint security vendor", "blurb": "Endpoint protection across all firm devices. Annual licence, invoiced yearly." },
+
+  { "id": "greenfield-print", "name": "Greenfield Print & Bind", "domain": "greenfield-print.local", "account_manager": "Nour Zaki", "am_email": "n.zaki@greenfield-print.local", "category": "Printing & binding", "blurb": "Prints and binds year-end accounts and client report packs. Billed per job." },
+
+  { "id": "harbor-facilities", "name": "Harbor Facilities Management", "domain": "harborfm.local", "account_manager": "Elias Murr", "am_email": "e.murr@harborfm.local", "category": "Cleaning & building services", "blurb": "Office cleaning and maintenance contractor. Monthly retainer invoice." },
+
+  { "id": "atlas-couriers", "name": "Atlas Couriers", "domain": "atlas-couriers.local", "account_manager": "Maya Khoury", "am_email": "m.khoury@atlas-couriers.local", "category": "Courier & document delivery", "blurb": "Secure document courier for signed engagement letters and originals. Billed monthly." }
+]

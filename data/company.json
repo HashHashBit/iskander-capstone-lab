@@ -1,0 +1,21 @@
+{
+  "name": "Rafid Financial Services",
+  "short": "Rafid FS",
+  "domain": "rafidfs.local",
+  "email_convention": "f.lastname@rafidfs.local",
+  "sector": "Accounting, bookkeeping, payroll & advisory for regional SMEs",
+  "tagline": "Books you can trust. Advice you can act on.",
+  "founded": 2011,
+  "reg_no": "RFS-2011-0447",
+  "hq": "Office 3, Al-Nahda Business Centre, District 7",
+  "switchboard": "+000 1 555 0100",
+  "brand": {
+    "primary": "#134e4a",
+    "accent": "#c9a227",
+    "ink": "#1f2937",
+    "paper": "#f7f6f2"
+  },
+  "stack_note": "Internal only — do not publish. Finance runs Sage 50 and Outlook 365; remote access via NorthLink VPN; endpoints on Sentinel-Guard AV.",
+  "target": "f.karim",
+  "note": "Fictitious company for an authorized training lab. Names, numbers, and the .local domain are non-routable and match nothing real. The `target` is the employee whose per-student artefacts carry the stage-1 flag; all 20 appear on the site, only the target is exploitable (02-flag-model.md §2)."
+}

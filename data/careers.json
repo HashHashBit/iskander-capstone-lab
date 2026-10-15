@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "junior-bookkeeper",
+    "title": "Junior Bookkeeper",
+    "dept": "Finance",
+    "contact": "o.rashid",
+    "date": "2026-08-01",
+    "body": [
+      "We're looking for a junior bookkeeper to join our SME client team.",
+      "You'll maintain client ledgers, run reconciliations, and help with month-end.",
+      "Essential: hands-on experience with Sage 50 and comfort working in Outlook 365. Attention to detail and a tidy audit trail matter more to us than speed."
+    ]
+  },
+  {
+    "slug": "it-support-technician",
+    "title": "IT Support Technician",
+    "dept": "IT",
+    "contact": "w.haddad",
+    "date": "2026-07-22",
+    "body": [
+      "Support our small, busy office as a first-line IT technician, reporting to the IT Administrator.",
+      "Day to day you'll handle new-starter setup in Outlook 365, endpoint issues, and remote-access support.",
+      "Useful experience: administering Microsoft 365, supporting the NorthLink VPN client, and working alongside Sentinel-Guard endpoint protection. We'll train the right person on our specific setup."
+    ]
+  },
+  {
+    "slug": "audit-associate",
+    "title": "Audit Associate",
+    "dept": "Audit & Advisory",
+    "contact": "o.rashid",
+    "date": "2026-07-15",
+    "body": [
+      "Join our audit team as an associate working across mid-market clients.",
+      "You'll perform testing, prepare working papers, and support seniors on fieldwork.",
+      "Part-qualified (or actively studying) with a solid grasp of double-entry and spreadsheets."
+    ]
+  },
+  {
+    "slug": "tax-associate",
+    "title": "Tax Associate",
+    "dept": "Tax",
+    "contact": "o.rashid",
+    "date": "2026-06-20",
+    "body": [
+      "We're expanding the tax practice and need an associate to prepare corporate and VAT returns.",
+      "You'll manage a filing calendar and liaise with clients for the records we need.",
+      "Experience with regional VAT and corporate filings is a plus."
+    ]
+  },
+  {
+    "slug": "accounts-assistant",
+    "title": "Accounts Assistant (Payable/Receivable)",
+    "dept": "Finance",
+    "contact": "o.rashid",
+    "date": "2026-05-30",
+    "body": [
+      "Support the accounts team across payable and receivable during a busy growth period.",
+      "You'll help with invoice intake, vendor onboarding checks, and reconciliations.",
+      "Comfort with Sage 50 and Outlook 365 is welcome; a methodical approach to matching invoices to purchase orders is essential."
+    ]
+  }
+]
