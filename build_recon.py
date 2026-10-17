@@ -43,19 +43,22 @@ E = html.escape
 
 
 # ---------------------------------------------------------------- avatars ----
-# Deterministic flat avatars: a coloured tile with a stylised head-and-shoulders
-# silhouette plus an initials chip, varied by hashed employee id. Non-realistic
-# on purpose, so a careless reuse of these images can never pass for a real
-# person. License-clean, offline, no external requests.
+# Deterministic cartoon avatars in a Bitmoji-ish flat style: head + hair + eyes
+# + smile + outfit on a coloured tile, varied by hashed employee id, with an
+# initials chip in the corner so identity stays unambiguous at 56-pixel size.
+# Clearly illustrated, nothing photorealistic, no external requests.
 
-# Pastel non-realistic tones for the "head" shape; clearly not skin.
-HEAD_TONES = ("#e9c8a9", "#c9a98f", "#ddb08a", "#b89273", "#a07a5e", "#8b6a4e")
-# Darker neutrals for the shoulders / clothing arc.
-TOP_TONES = ("#2c3e50", "#34495e", "#3b5f6b", "#5a4a3b", "#4a3b5a",
-             "#3b5a4a", "#5a3b3b", "#4a4a5a")
-# One of five tiny decorations under the head: nothing, collar v, bow tie,
-# necktie, round pendant. Each stays recognisable at the 56x56 card size.
-LOOKS = ("plain", "collar", "bow", "tie", "pendant")
+BG_HUES = (190, 215, 265, 310, 25, 45, 85, 150, 165, 345)
+# Flat cartoon skin palette, no shading. Not meant as a true-to-life range.
+SKIN = ("#f1c9a5", "#e5b58a", "#d9a06a", "#b17d4a", "#8a5a30", "#5e3a1e")
+HAIR_COLOR = ("#1b1b1b", "#2b1b0b", "#4a2e14", "#6b4423", "#8b7355", "#555555")
+# Hair styles are biased by gender so the picture matches the name;
+# "neutral" is both pools together and is the fallback when gender is unset.
+HAIR_STYLE_M = ("short", "sideparted", "bald", "buzz", "afro", "manbun")
+HAIR_STYLE_F = ("long", "bun", "hijab", "afro", "sideparted")
+HAIR_STYLE_N = HAIR_STYLE_M + HAIR_STYLE_F
+TOP_STYLE = ("suit", "polo", "shirt", "turtleneck")
+MOUTH = ("smile", "neutral", "grin")
 
 
 def _h32(s):
@@ -66,46 +69,130 @@ def _h32(s):
     return h
 
 
+def _pick(r, shift, choices):
+    return choices[(r >> shift) % len(choices)]
+
+
 def avatar_svg(emp):
     sid = emp["id"]
-    gid = "a_" + "".join(c if c.isalnum() else "_" for c in sid)
     initials = "".join(p[0] for p in emp["name"].split()[:2]).upper()
     r = _h32(sid)
-    bg_hue = r % 360
-    bg_top = f"hsl({bg_hue},34%,56%)"
-    bg_bot = f"hsl({bg_hue},34%,38%)"
-    head = HEAD_TONES[(r >> 8) % len(HEAD_TONES)]
-    top = TOP_TONES[(r >> 16) % len(TOP_TONES)]
-    look = LOOKS[(r >> 24) % len(LOOKS)]
-    # The accessory sits between the head and the shoulder arc.
-    if look == "collar":
-        acc = f'<path d="M38 60 L48 70 L58 60" fill="none" stroke="{head}" stroke-width="2.4"/>'
-    elif look == "bow":
-        acc = (f'<path d="M42 64 L48 68 L54 64 L54 72 L48 68 L42 72 Z" fill="#b53027"/>'
-               '<circle cx="48" cy="68" r="1.8" fill="#7a1c17"/>')
-    elif look == "tie":
-        acc = (f'<path d="M44 62 L52 62 L54 70 L48 86 L42 70 Z" fill="#1f5fa5"/>'
-               '<path d="M44 62 L52 62 L50 66 L46 66 Z" fill="#164a86"/>')
-    elif look == "pendant":
-        acc = ('<path d="M38 61 Q48 72 58 61" fill="none" stroke="#d7c56b" stroke-width="1.4"/>'
-               '<circle cx="48" cy="70" r="2.2" fill="#d7c56b"/>')
+    bg_c = f"hsl({_pick(r, 0, BG_HUES)},48%,72%)"
+    skin = _pick(r, 4, SKIN)
+    hair_c = _pick(r, 8, HAIR_COLOR)
+    gender = emp.get("gender")
+    pool = HAIR_STYLE_M if gender == "m" else HAIR_STYLE_F if gender == "f" else HAIR_STYLE_N
+    style = _pick(r, 12, pool)
+    top = _pick(r, 16, TOP_STYLE)
+    mouth = _pick(r, 24, MOUTH)
+    glasses = ((r >> 20) & 7) < 3                 # ~37% have glasses
+    beard = gender == "m" and ((r >> 23) & 7) < 3  # ~37% of men have a beard
+    cheeks = ((r >> 27) & 1) == 1                 # half have cheek blush
+
+    # ---- hair: back layer (behind the head) and front layer (on top of head)
+    hair_back = hair_front = ""
+    if style == "hijab":
+        # scarf covers hair entirely and continues onto shoulders
+        hair_back = (f'<path d="M18 50 Q18 14 48 14 Q78 14 78 50 L78 76 '
+                     f'Q78 82 72 82 L24 82 Q18 82 18 76 Z" fill="{hair_c}"/>')
+    elif style == "bald":
+        pass
+    elif style == "long":
+        hair_back = (f'<path d="M24 44 Q24 82 48 82 Q72 82 72 44 Q72 16 48 16 '
+                     f'Q24 16 24 44 Z" fill="{hair_c}"/>')
+    elif style == "short":
+        hair_front = (f'<path d="M28 34 Q28 16 48 16 Q68 16 68 34 '
+                      f'Q64 28 48 28 Q32 28 28 34 Z" fill="{hair_c}"/>')
+    elif style == "sideparted":
+        hair_front = (f'<path d="M28 32 Q28 16 48 16 Q68 16 68 32 '
+                      f'Q64 22 56 22 Q48 22 44 26 Q38 32 28 32 Z" fill="{hair_c}"/>')
+    elif style == "buzz":
+        # Very short crop that just outlines the top of the head.
+        hair_front = (f'<path d="M30 32 Q30 20 48 20 Q66 20 66 32 '
+                      f'Q66 28 48 28 Q30 28 30 32 Z" fill="{hair_c}" fill-opacity="0.9"/>')
+    elif style == "bun":
+        hair_front = (f'<circle cx="48" cy="14" r="6" fill="{hair_c}"/>'
+                      f'<path d="M28 32 Q28 18 48 18 Q68 18 68 32 '
+                      f'Q60 26 48 26 Q36 26 28 32 Z" fill="{hair_c}"/>')
+    elif style == "manbun":
+        # Small top-knot plus a close crop around the sides.
+        hair_front = (f'<circle cx="48" cy="16" r="5" fill="{hair_c}"/>'
+                      f'<path d="M30 32 Q30 20 48 20 Q66 20 66 32 '
+                      f'Q62 24 48 24 Q34 24 30 32 Z" fill="{hair_c}"/>')
+    elif style == "afro":
+        hair_back = (f'<ellipse cx="48" cy="26" rx="26" ry="18" fill="{hair_c}"/>')
+
+    # ---- face parts
+    # Soft shadow tone for nose, derived from skin
+    nose = ('<path d="M46 46 Q48 50 50 46" fill="none" stroke="#000" '
+            'stroke-opacity="0.18" stroke-width="1.2" stroke-linecap="round"/>')
+    if mouth == "smile":
+        mouth_svg = ('<path d="M42 50 Q48 55 54 50" fill="none" stroke="#5a2b14" '
+                     'stroke-width="1.6" stroke-linecap="round"/>')
+    elif mouth == "grin":
+        mouth_svg = ('<path d="M42 50 Q48 56 54 50 Q48 54 42 50 Z" fill="#fff"/>'
+                     '<path d="M42 50 Q48 55 54 50" fill="none" stroke="#5a2b14" '
+                     'stroke-width="1.4" stroke-linecap="round"/>')
     else:
-        acc = ""
+        mouth_svg = ('<line x1="44" y1="52" x2="52" y2="52" stroke="#5a2b14" '
+                     'stroke-width="1.6" stroke-linecap="round"/>')
+    eyes = ('<circle cx="41" cy="42" r="1.8" fill="#1a1a1a"/>'
+            '<circle cx="55" cy="42" r="1.8" fill="#1a1a1a"/>')
+    brows = ('<path d="M37 38 Q41 36 45 38" fill="none" stroke="#1a1a1a" '
+             'stroke-width="1.2" stroke-linecap="round"/>'
+             '<path d="M51 38 Q55 36 59 38" fill="none" stroke="#1a1a1a" '
+             'stroke-width="1.2" stroke-linecap="round"/>')
+    cheeks_svg = ('<circle cx="36" cy="49" r="2.3" fill="#f08a8a" fill-opacity="0.55"/>'
+                  '<circle cx="60" cy="49" r="2.3" fill="#f08a8a" fill-opacity="0.55"/>'
+                  ) if cheeks else ""
+    glasses_svg = ('<circle cx="41" cy="42" r="5" fill="#fff" fill-opacity="0.25" '
+                   'stroke="#222" stroke-width="1.3"/>'
+                   '<circle cx="55" cy="42" r="5" fill="#fff" fill-opacity="0.25" '
+                   'stroke="#222" stroke-width="1.3"/>'
+                   '<line x1="46" y1="42" x2="50" y2="42" stroke="#222" '
+                   'stroke-width="1.3"/>') if glasses else ""
+    beard_svg = ""
+    if beard:
+        beard_svg = (f'<path d="M32 44 Q32 60 48 64 Q64 60 64 44 Q64 54 56 56 '
+                     f'Q48 58 40 56 Q32 54 32 44 Z" fill="{hair_c}" fill-opacity="0.92"/>')
+
+    # ---- outfit (bottom quarter) and shoulders
+    if top == "hijab":
+        outfit = ""  # the scarf already extends down past the shoulders
+    elif top == "suit":
+        outfit = (f'<path d="M14 96 L14 80 Q14 72 30 70 L48 78 L66 70 Q82 72 82 80 '
+                  f'L82 96 Z" fill="#2a3a4a"/>'
+                  f'<path d="M48 78 L40 86 L40 96 L56 96 L56 86 Z" fill="#f5f5f5"/>'
+                  f'<path d="M46 82 L50 82 L52 94 L48 96 L44 94 Z" fill="#8b2a2a"/>')
+    elif top == "polo":
+        outfit = (f'<path d="M14 96 L14 80 Q14 72 30 70 L48 78 L66 70 Q82 72 82 80 '
+                  f'L82 96 Z" fill="#1f5fa5"/>'
+                  f'<path d="M44 72 L48 78 L52 72 L50 74 L48 75 L46 74 Z" fill="#174786"/>')
+    elif top == "turtleneck":
+        outfit = (f'<path d="M14 96 L14 78 Q14 70 48 68 Q82 70 82 78 L82 96 Z" '
+                  f'fill="#4a3b5a"/>'
+                  f'<path d="M34 70 Q34 64 48 64 Q62 64 62 70 L62 74 '
+                  f'Q48 72 34 74 Z" fill="#5a4a6a"/>')
+    else:  # shirt
+        outfit = (f'<path d="M14 96 L14 80 Q14 72 30 70 L48 78 L66 70 Q82 72 82 80 '
+                  f'L82 96 Z" fill="#eef2f2"/>'
+                  f'<path d="M48 78 L42 84 L44 90 L52 90 L54 84 Z" fill="#eef2f2" '
+                  f'stroke="#b7bcbc" stroke-width="0.6"/>')
+
+    # Order: bg, hair-back, head, ears, face features, hair-front, glasses, outfit, chip.
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" '
         f'aria-label="{E(emp["name"])}">'
-        f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
-        f'<stop offset="0" stop-color="{bg_top}"/>'
-        f'<stop offset="1" stop-color="{bg_bot}"/>'
-        f'</linearGradient></defs>'
-        f'<rect width="96" height="96" rx="8" fill="url(#{gid})"/>'
-        # shoulder arc: a half ellipse rising out of the bottom edge
-        f'<path d="M8 96 Q8 66 48 66 Q88 66 88 96 Z" fill="{top}"/>'
-        # head: a flat circle offset slightly up
-        f'<circle cx="48" cy="40" r="18" fill="{head}"/>'
-        f'{acc}'
-        # initials chip, bottom-right, so identity is unambiguous at any size
-        f'<rect x="62" y="78" width="26" height="12" rx="3" fill="#ffffff" fill-opacity="0.94"/>'
+        f'<rect width="96" height="96" rx="8" fill="{bg_c}"/>'
+        f'{hair_back}'
+        # head oval + ears
+        f'<ellipse cx="48" cy="42" rx="18" ry="20" fill="{skin}"/>'
+        f'<ellipse cx="30" cy="44" rx="2.6" ry="3.6" fill="{skin}"/>'
+        f'<ellipse cx="66" cy="44" rx="2.6" ry="3.6" fill="{skin}"/>'
+        f'{brows}{nose}{eyes}{beard_svg}{mouth_svg}{cheeks_svg}'
+        f'{hair_front}{glasses_svg}{outfit}'
+        # initials chip stays, so identity reads at any size
+        f'<rect x="62" y="78" width="26" height="12" rx="3" fill="#ffffff" fill-opacity="0.92"/>'
         f'<text x="75" y="87" font-family="Segoe UI,Arial,sans-serif" font-size="9" '
         f'font-weight="700" fill="#222" text-anchor="middle">{initials}</text>'
         f'</svg>'
