@@ -43,16 +43,72 @@ E = html.escape
 
 
 # ---------------------------------------------------------------- avatars ----
+# Deterministic flat avatars: a coloured tile with a stylised head-and-shoulders
+# silhouette plus an initials chip, varied by hashed employee id. Non-realistic
+# on purpose, so a careless reuse of these images can never pass for a real
+# person. License-clean, offline, no external requests.
+
+# Pastel non-realistic tones for the "head" shape; clearly not skin.
+HEAD_TONES = ("#e9c8a9", "#c9a98f", "#ddb08a", "#b89273", "#a07a5e", "#8b6a4e")
+# Darker neutrals for the shoulders / clothing arc.
+TOP_TONES = ("#2c3e50", "#34495e", "#3b5f6b", "#5a4a3b", "#4a3b5a",
+             "#3b5a4a", "#5a3b3b", "#4a4a5a")
+# One of five tiny decorations under the head: nothing, collar v, bow tie,
+# necktie, round pendant. Each stays recognisable at the 56x56 card size.
+LOOKS = ("plain", "collar", "bow", "tie", "pendant")
+
+
+def _h32(s):
+    """Small deterministic hash. hash() varies per process; this does not."""
+    h = 2166136261
+    for c in s:
+        h = ((h ^ ord(c)) * 16777619) & 0xFFFFFFFF
+    return h
+
+
 def avatar_svg(emp):
-    """Deterministic initials-on-colour SVG. License-clean, offline, consistent."""
+    sid = emp["id"]
+    gid = "a_" + "".join(c if c.isalnum() else "_" for c in sid)
     initials = "".join(p[0] for p in emp["name"].split()[:2]).upper()
-    h = sum(ord(c) for c in emp["id"]) % 360
-    bg = f"hsl({h},32%,42%)"
+    r = _h32(sid)
+    bg_hue = r % 360
+    bg_top = f"hsl({bg_hue},34%,56%)"
+    bg_bot = f"hsl({bg_hue},34%,38%)"
+    head = HEAD_TONES[(r >> 8) % len(HEAD_TONES)]
+    top = TOP_TONES[(r >> 16) % len(TOP_TONES)]
+    look = LOOKS[(r >> 24) % len(LOOKS)]
+    # The accessory sits between the head and the shoulder arc.
+    if look == "collar":
+        acc = f'<path d="M38 60 L48 70 L58 60" fill="none" stroke="{head}" stroke-width="2.4"/>'
+    elif look == "bow":
+        acc = (f'<path d="M42 64 L48 68 L54 64 L54 72 L48 68 L42 72 Z" fill="#b53027"/>'
+               '<circle cx="48" cy="68" r="1.8" fill="#7a1c17"/>')
+    elif look == "tie":
+        acc = (f'<path d="M44 62 L52 62 L54 70 L48 86 L42 70 Z" fill="#1f5fa5"/>'
+               '<path d="M44 62 L52 62 L50 66 L46 66 Z" fill="#164a86"/>')
+    elif look == "pendant":
+        acc = ('<path d="M38 61 Q48 72 58 61" fill="none" stroke="#d7c56b" stroke-width="1.4"/>'
+               '<circle cx="48" cy="70" r="2.2" fill="#d7c56b"/>')
+    else:
+        acc = ""
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" '
-        f'aria-label="{E(emp["name"])}"><rect width="96" height="96" rx="8" fill="{bg}"/>'
-        f'<text x="48" y="58" font-family="Segoe UI,Arial,sans-serif" font-size="38" '
-        f'font-weight="600" fill="#fff" text-anchor="middle">{initials}</text></svg>'
+        f'aria-label="{E(emp["name"])}">'
+        f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
+        f'<stop offset="0" stop-color="{bg_top}"/>'
+        f'<stop offset="1" stop-color="{bg_bot}"/>'
+        f'</linearGradient></defs>'
+        f'<rect width="96" height="96" rx="8" fill="url(#{gid})"/>'
+        # shoulder arc: a half ellipse rising out of the bottom edge
+        f'<path d="M8 96 Q8 66 48 66 Q88 66 88 96 Z" fill="{top}"/>'
+        # head: a flat circle offset slightly up
+        f'<circle cx="48" cy="40" r="18" fill="{head}"/>'
+        f'{acc}'
+        # initials chip, bottom-right, so identity is unambiguous at any size
+        f'<rect x="62" y="78" width="26" height="12" rx="3" fill="#ffffff" fill-opacity="0.94"/>'
+        f'<text x="75" y="87" font-family="Segoe UI,Arial,sans-serif" font-size="9" '
+        f'font-weight="700" fill="#222" text-anchor="middle">{initials}</text>'
+        f'</svg>'
     )
 
 
